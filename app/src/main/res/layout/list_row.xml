@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="96dp"
+        android:id="@+id/view"
+        android:layout_weight="0.66">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:gravity="bottom">
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/ivItemPict"
+                android:src="@drawable/noimage"
+                android:layout_marginRight="15dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tvItemJudul"
+                android:text="NEWS HEADLIEN"
+                android:layout_alignTop="@+id/ivItemPict"
+                android:layout_toRightOf="@id/ivItemPict"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:orientation="horizontal"
+                android:layout_toRightOf="@+id/ivItemPict"
+                android:layout_below="@+id/tvItemJudul"
+                android:layout_marginTop="8dp"
+                android:background="#f0f0f0"
+                android:id="@+id/linearLayout"></LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kategori"
+                android:id="@+id/tvItemKategori"
+                android:layout_alignWithParentIfMissing="false"
+                android:gravity="bottom"
+                android:layout_alignParentBottom="true"
+                android:layout_alignLeft="@+id/linearLayout"
+                android:layout_alignStart="@+id/linearLayout" />
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
