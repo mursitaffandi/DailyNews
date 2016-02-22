@@ -17,7 +17,14 @@ import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.mursit.news.dailynews.fragment.Beritaku;
 import com.mursit.news.dailynews.fragment.Lokal;
 import com.mursit.news.dailynews.fragment.Populer;
@@ -48,7 +55,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
         getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -65,10 +71,10 @@ public class MainActivity extends AppCompatActivity
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragmen(new Beritaku(), "Beritaku");
+        adapter.addFragmen(new Beritaku(), "Home");
         adapter.addFragmen(new Update(), "Update");
-        adapter.addFragmen(new Populer(), "Populer");
-        adapter.addFragmen(new Lokal(), "Lokal");
+        adapter.addFragmen(new Populer(), "Hot");
+        adapter.addFragmen(new Lokal(), "Dunia");
         viewPager.setAdapter(adapter);
     }
 

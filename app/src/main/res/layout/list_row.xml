@@ -17,6 +17,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:id="@+id/ivItemPict"
+                android:layout_marginEnd="15dp"
                 android:src="@drawable/noimage"
                 android:layout_marginRight="15dp"/>
             <TextView
@@ -37,10 +38,43 @@
                 android:background="#f0f0f0"
                 android:id="@+id/linearLayout"></LinearLayout>
 
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/ivItemPict"
+                android:layout_below="@+id/linearLayout"
+                android:layout_marginTop="1dp"
+                android:id="@+id/linearLayout2">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Source"
+                    android:id="@+id/tvItemSumber"
+                    android:layout_alignTop="@+id/linearLayout"
+                    android:layout_toRightOf="@+id/ivItemPict"
+                    android:layout_toEndOf="@+id/ivItemPict" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tvItemSeparator"
+                    android:text="   "
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Publication Date"
+                    android:id="@+id/tvItemDate"
+                    android:layout_alignTop="@+id/linearLayout"
+                    android:layout_toRightOf="@+id/tvItemKategori"
+                    android:layout_toEndOf="@+id/tvItemKategori" />
+            </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Kategori"
+                android:text="Category"
                 android:id="@+id/tvItemKategori"
                 android:layout_alignWithParentIfMissing="false"
                 android:gravity="bottom"

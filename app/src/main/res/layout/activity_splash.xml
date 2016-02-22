@@ -17,23 +17,24 @@
         android:src="@drawable/logoicon"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
-
     <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
+        android:id="@+id/progressBar"
         android:layout_width="256dp"
         android:layout_height="wrap_content"
-        android:id="@+id/progressBar"
         android:layout_below="@+id/imageView"
         android:layout_marginTop="12dp"
         android:layout_alignRight="@+id/imageView"
         android:layout_alignEnd="@+id/imageView"
         android:layout_alignLeft="@+id/imageView"
-        android:layout_alignStart="@+id/imageView" />
+        android:layout_alignStart="@+id/imageView"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="30dp"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Load Information"
+        android:text="V.0.1.4"
         android:id="@+id/textView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="49dp"
