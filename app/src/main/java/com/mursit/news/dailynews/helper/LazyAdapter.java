@@ -1,6 +1,5 @@
 package com.mursit.news.dailynews.helper;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.mursit.news.dailynews.R;
-import com.mursit.news.dailynews.fragment.Beritaku;
+import com.mursit.news.dailynews.fragment.models.ItemBerita;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,16 +18,16 @@ import java.util.HashMap;
  */
 public class LazyAdapter extends BaseAdapter
 {
-    private Activity activity;
-    private ArrayList<HashMap<String, String>> data;
+    private Context c;
+    private ArrayList<ItemBerita> data;
     private static LayoutInflater inflater = null;
     public ImageLoader imageLoader;
 
-    public LazyAdapter(Activity a, ArrayList<HashMap<String, String>> d) {
-        activity = a;
-        data = d;
-        inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        imageLoader = new ImageLoader(activity.getApplicationContext());
+    public LazyAdapter(Context c, ArrayList<ItemBerita> dataBerita) {
+        this.c = c;
+        data = new ArrayList<>();
+        inflater = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        imageLoader = new ImageLoader(c.getApplicationContext());
     }
 
     @Override
@@ -46,29 +45,29 @@ public class LazyAdapter extends BaseAdapter
         return position;
     }
 
+    private class ViewHolder {
+        ImageView thumnail;
+        TextView id, head, source, date, category;
+    }
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View vi = convertView;
-        if (convertView == null) {
+    public View getView(int position, View view, ViewGroup parent) {
+        View vi = view;
+        ViewHolder holder = null;
+        if (view == null) {
+            inflater = (LayoutInflater) c.getSystemService(c.LAYOUT_INFLATER_SERVICE);
             vi = inflater.inflate(R.layout.list_row, null);
+            holder = new ViewHolder();
+            holder.id = (TextView) vi.findViewById(R.id.tvItemID);
+            holder.head = (TextView) vi.findViewById(R.id.tvItemJudul);
+            holder.source = (TextView) vi.findViewById(R.id.tvItemSumber);
+            holder.date = (TextView) vi.findViewById(R.id.tvItemDate);
+            holder.category = (TextView) vi.findViewById(R.id.tvItemKategori);
+            holder.thumnail = (ImageView) vi.findViewById(R.id.ivItemPict);
+        } else {
+            holder = (ViewHolder) vi.getTag();
         }
-        String id;
-        String link;
-        TextView head = (TextView) vi.findViewById(R.id.tvItemJudul);
-        TextView source = (TextView) vi.findViewById(R.id.tvItemSumber);
-        TextView date = (TextView) vi.findViewById(R.id.tvItemDate);
-        TextView category = (TextView) vi.findViewById(R.id.tvItemKategori);
-        ImageView thumnail = (ImageView) vi.findViewById(R.id.ivItemPict);
 
-        HashMap<String, String> list_rss = new HashMap<String, String>();
-        list_rss = data.get(position);
-        id = list_rss.get(Beritaku.TAG_ID);
-        head.setText(list_rss.get(Beritaku.TAG_JUDUL));
-        link = list_rss.get(Beritaku.TAG_LINK);
-        source.setText(list_rss.get(Beritaku.TAG_SUMBER));
-        date.setText(list_rss.get(Beritaku.TAG_DATE));
-        category.setText(list_rss.get(Beritaku.TAG_KATEGORI));
-        imageLoader.DisplayImage(list_rss.get(Beritaku.TAG_GAMBAR), thumnail);
+        ItemBerita b = data.get(position);
         return vi;
     }
 }

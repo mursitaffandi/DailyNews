@@ -1,12 +1,9 @@
 package com.mursit.news.dailynews.fragment;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +11,22 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
 import com.mursit.news.dailynews.DefaultHttpClient;
 import com.mursit.news.dailynews.JSONParser;
 import com.mursit.news.dailynews.R;
 import com.mursit.news.dailynews.WebActivity;
+import com.mursit.news.dailynews.fragment.models.ItemBerita;
 import com.mursit.news.dailynews.helper.LazyAdapter;
+import com.mursit.news.dailynews.helper.RbHelpers;
+import com.mursit.news.dailynews.helper.Utils;
 
-import org.apache.http.NameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by ima2 on 2/15/16.
@@ -37,9 +36,8 @@ public class Beritaku extends Fragment{
     JSONParser jsonParser = new JSONParser();
     JSONArray jsonArray = null;
     LazyAdapter adapter;
-    DefaultHttpClient httpClient = new DefaultHttpClient();
-    ArrayList<HashMap<String, String>> DaftarBeritaku = new ArrayList<>();
-    private ProgressDialog progressDialog;
+    AQuery aq;
+    ArrayList<ItemBerita> DaftarBeritaku;
     public static final String TAG_ID = "id";
     public static final String TAG_JUDUL = "title";
     public static final String TAG_LINK = "link";
@@ -51,78 +49,85 @@ public class Beritaku extends Fragment{
     public Beritaku () {}
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.fragment_beritaku, container, false);
-        lvBeritaku = (ListView) v.findViewById(R.id.webViewBerita);
-        DaftarBeritaku = new ArrayList<HashMap<String, String>>();
-        new TampilBeritaku().execute();
+        return inflater.inflate(R.layout.fragment_beritaku, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        lvBeritaku = (ListView) view.findViewById(R.id.webViewBerita);
         lvBeritaku.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                HashMap<String, String> map = DaftarBeritaku.get(position);
-                Intent b = new Intent(getActivity().getApplicationContext(), WebActivity.class);
-                b.putExtra(TAG_ID, map.get(TAG_ID));
-                startActivity(b);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                ItemBerita b = DaftarBeritaku.get(position);
+                Intent in = new Intent(getActivity(), WebActivity.class);
+                in.putExtra(Utils.LINK, b.getLinkBerita());
+                in.putExtra(Utils.ID, b.getIdBerita());
+                in.putExtra(Utils.KATEGORI, b.getIdBerita());
+                in.putExtra(Utils.DATE, b.getIdBerita());
+                startActivity(in);
             }
         });
-        return v;
+
+        aq = new AQuery(getActivity());
+        DaftarBeritaku = new ArrayList<>();
+        if (!RbHelpers.isOnline(getActivity())) {
+            RbHelpers.alertMessageNoInternet(getActivity());
+        } else {
+            getData();
+        }
     }
 
-    private class TampilBeritaku extends AsyncTask<String, String, String> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog = new ProgressDialog(getActivity());
-            progressDialog.setIndeterminate(false);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
+    private void getData() {
+        DaftarBeritaku.clear();
+        String url = RbHelpers.HOME;
 
-        @Override
-        protected String doInBackground(String... params) {
-            List<NameValuePair> param = new ArrayList<>();
-            JSONObject jsonObject = jsonParser.makeHttpRequest(DefaultHttpClient.BASE_URL, "GET", param);
-            Log.i("JSON : ", " " + jsonObject);
-            try {
-                jsonArray = jsonObject.getJSONArray("berita");
-                for (int i = 0; 1 < jsonArray.length();i++){
-                    JSONObject c = jsonArray.getJSONObject(i);
-                    String id = c.getString(TAG_ID);
-                    String source = c.getString(TAG_SUMBER);
-                    String title = c.getString(TAG_JUDUL);
-                    String link = c.getString(TAG_LINK);
-                    String pubDate = c.getString(TAG_DATE);
-                    String category = c.getString(TAG_KATEGORI);
-                    String image = c.getString(TAG_GAMBAR);
-                    HashMap<String, String> map = new HashMap<>();
-                    map.put(TAG_ID, id);
-                    map.put(TAG_SUMBER, source);
-                    map.put(TAG_JUDUL, title);
-                    map.put(TAG_LINK, link);
-                    map.put(TAG_DATE, pubDate);
-                    map.put(TAG_KATEGORI, category);
-                    map.put(TAG_GAMBAR, image);
-                    DaftarBeritaku.add(map);
-                }
-            } catch (JSONException e) {
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            progressDialog.dismiss();
-            run(new Runnable() {
+        try{
+            RbHelpers.pre("URL : " + url);
+            aq.ajax(url, String.class, new AjaxCallback<String>(){
                 @Override
-                public void run() {
-                    SetListAdapter(DaftarBeritaku);
+                public void callback(String url, String object, AjaxStatus status) {
+                    if (object != null) {
+                        RbHelpers.pre("Respons : " + object);
+                        try {
+                            JSONObject json = new JSONObject(object);
+                            JSONArray berita = json.getJSONArray("berita");
+                            RbHelpers.pesan(getActivity(), "Welcome");
+                            if (berita.length() > 0){
+                                JSONArray jArray = berita;
+                                for (int i = 0 ; i < jArray.length() ; i++) {
+                                    JSONObject jObj = jArray.getJSONObject(i);
+                                    ItemBerita b = new ItemBerita();
+                                    b.setIdBerita(jObj.getString("id"));
+                                    b.setSourceBerita(jObj.getString("source"));
+                                    b.setCategoryBerita(jObj.getString("category"));
+                                    b.setTitleBerita(jObj.getString("title"));
+                                    b.setLinkBerita(jObj.getString("link"));
+                                    b.setPubDateBerita(jObj.getString("pubDate"));
+                                    b.setImageBerita(jObj.getString("image"));
+
+                                    DaftarBeritaku.add(b);
+                                    RbHelpers.pre("Sedang masukan data");
+                                }
+                                RbHelpers.pre("sampai di adapter , tidak ada data");
+                                adapter = new LazyAdapter(getActivity(), DaftarBeritaku);
+                                lvBeritaku.setAdapter(adapter);
+                            } else {
+                                RbHelpers.pesan(getActivity(), "Data tidak ada");
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            RbHelpers.pesan(getActivity(), "Error JSOn Data");
+                        } catch (Exception e){
+                            e.printStackTrace();
+                            RbHelpers.pesan(getActivity(), "Error Parsing Data");
+                        };
+                    }
                 }
             });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }
-
-    private void SetListAdapter(ArrayList<HashMap<String, String>> daftarBeritaku) {
-        adapter = new LazyAdapter(getActivity(), daftarBeritaku);
-        lvBeritaku.setAdapter(adapter);
     }
 }
 
